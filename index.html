@@ -1,10 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Superbowl Squares</title>
+    <!-- Add QR Code library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
         body {
             background-color: #000;
@@ -451,6 +452,139 @@
             filter: blur(2px);
             opacity: 0;
         }
+
+        /* Update layout styles for a more compact 16:9 design */
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+            align-items: flex-start;
+        }
+
+        .main-content {
+            flex: 1.2;
+            min-width: 0;
+        }
+
+        .side-content {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(11, minmax(35px, 60px));
+            grid-template-rows: repeat(11, minmax(35px, 60px));
+            gap: 1px;
+            background: linear-gradient(135deg, #cc0000 0%, #ff0033 100%);
+            padding: 5px;
+            margin: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(255, 0, 51, 0.3);
+            width: fit-content;
+            max-width: 100%;
+        }
+
+        .qr-container {
+            display: none;
+            background: linear-gradient(180deg, #2b2b2b 0%, #222222 100%);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            padding: 30px;
+            width: 100%;
+            box-sizing: border-box;
+            aspect-ratio: 1;
+        }
+
+        #qrcode {
+            margin: 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #qrcode img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .instructions-container {
+            background: linear-gradient(180deg, #2b2b2b 0%, #222222 100%);
+            border-radius: 8px;
+            padding: 20px;
+            color: #ffffff;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .instructions-container h3 {
+            color: #ff0033;
+            margin-bottom: 15px;
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+
+        .instructions-container p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .instructions-container p:last-child {
+            color: #ff0033;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0.3;
+        }
+
+        /* Show side content on desktop */
+        @media (min-width: 1024px) {
+            .qr-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        /* Mobile layout */
+        @media (max-width: 1023px) {
+            .content-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .side-content {
+                width: 100%;
+                max-width: 605px;
+            }
+
+            .grid-container {
+                grid-template-columns: repeat(11, minmax(25px, 45px));
+                grid-template-rows: repeat(11, minmax(25px, 45px));
+            }
+
+            .qr-container {
+                display: none;
+            }
+        }
     </style>
     <!-- Add Supabase JS library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -639,6 +773,12 @@
                     submitName();
                 }
             });
+
+            // Add QR code generation
+            const qr = qrcode(0, 'M');
+            qr.addData('https://kalem-edlin.github.io/superbowl-squares/'); // Replace with your desired URL
+            qr.make();
+            document.getElementById('qrcode').innerHTML = qr.createImgTag(10);
         });
 
         // Function to load all entries
@@ -820,47 +960,51 @@
     </div>
 
     <div id="app">
-        <div style="text-align: center; margin: 20px 0;">
+        <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://logos-world.net/wp-content/uploads/2021/08/Coors-Light-Emblem.png" 
                  alt="Coors Light Logo" 
                  style="height: 50px; margin-right: 10px; vertical-align: middle;">
             <h1 style="display: inline-block; vertical-align: middle;">Superbowl Squares</h1>
         </div>
-        <div class="grid-container" id="grid"></div>
-        <div style="margin: 20px auto; 
-                    padding: 20px; 
-                    background: linear-gradient(180deg, #2b2b2b 0%, #222222 100%); 
-                    border-radius: 8px;
-                    max-width: 605px;
-                    color: #ffffff;">
-            <h3 style="color: #ff0033; margin-bottom: 15px; margin-top: 0px;font-size: 1.4em;">How to Win</h3>
-            <p style="line-height: 1.6; margin-bottom: 15px; font-size: 1.1em; text-align: left;">
-                Winners are determined by matching the last digit of each team's score at the end of each quarter.
-            </p>
-                        <p style="line-height: 1.6; color: #ff0033; font-weight: bold; font-size: 1.1em; text-align: left;">
-                Game on.
-            </p>
-        </div>
-        <div style="text-align: center; margin-top: 40px; opacity: 0.3;">
-            <button onclick="clearBoard()" 
-                    style="background: none; 
-                           border: none; 
-                           color: #666; 
-                           font-size: 12px; 
-                           cursor: pointer; 
-                           padding: 5px 10px;">
-                Reset Board
-            </button>
-            <button onclick="scrambleBoard()" 
-                    style="background: none; 
-                           border: none; 
-                           color: #666; 
-                           font-size: 12px; 
-                           cursor: pointer; 
-                           padding: 5px 10px;
-                           margin-left: 10px;">
-                Scramble Board
-            </button>
+        
+        <div class="content-wrapper">
+            <div class="main-content">
+                <div class="grid-container" id="grid"></div>
+                <div class="controls">
+                    <button onclick="clearBoard()" 
+                            style="background: none; 
+                                   border: none; 
+                                   color: #666; 
+                                   font-size: 12px; 
+                                   cursor: pointer; 
+                                   padding: 5px 10px;">
+                        Reset Board
+                    </button>
+                    <button onclick="scrambleBoard()" 
+                            style="background: none; 
+                                   border: none; 
+                                   color: #666; 
+                                   font-size: 12px; 
+                                   cursor: pointer; 
+                                   padding: 5px 10px;
+                                   margin-left: 10px;">
+                        Scramble Board
+                    </button>
+                </div>
+            </div>
+
+            <div class="side-content">
+                <div class="qr-container">
+                    <div id="qrcode"></div>
+                </div>
+
+                <div class="instructions-container">
+                    <h3>How to Win</h3>
+                    <p>Scan the QR code to play on your mobile device.</p>
+                    <p>Winners are determined by matching the last digit of each team's score at the end of each quarter.</p>
+                    <p>Game on.</p>
+                </div>
+            </div>
         </div>
     </div>
 
